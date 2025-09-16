@@ -8,93 +8,109 @@
 (짝수번째 수까지 말했을 때는 가운데에 있는 두 수 중 작은 수를 말해야 한다.)
 */
 
-#include<iostream>
+#include <iostream>
 using namespace std;
 
-// arr와 order를 합병정렬로 함께 정렬
-void merge(int* arr, int* order, int left, int mid, int right) {
-    int n1 = mid - left + 1;
-    int n2 = right - mid;
+// const int MAXN = 100001;
 
-    int* L = new int[n1];
-    int* R = new int[n2];
-    int* L_order = new int[n1];
-    int* R_order = new int[n2];
+// // 최대힙
+// class MaxHeap {
+//     int heap[MAXN];
+//     int sz;
+// public:
+//     MaxHeap() : sz(0) {}
+//     void push(int val) {
+//         heap[sz] = val;
+//         int idx = sz++;
+//         while (idx > 0 && heap[(idx - 1) / 2] < heap[idx]) {
+//             swap(heap[(idx - 1) / 2], heap[idx]);
+//             idx = (idx - 1) / 2;
+//         }
+//     }
+//     void pop() {
+//         heap[0] = heap[--sz];
+//         int idx = 0;
+//         while (true) {
+//             int left = idx * 2 + 1, right = idx * 2 + 2, largest = idx;
+//             if (left < sz && heap[left] > heap[largest]) largest = left;
+//             if (right < sz && heap[right] > heap[largest]) largest = right;
+//             if (largest == idx) break;
+//             swap(heap[idx], heap[largest]);
+//             idx = largest;
+//         }
+//     }
+//     int top() const { return heap[0]; }
+//     int size() const { return sz; }
+//     bool empty() const { return sz == 0; }
+// };
 
-    for (int i = 0; i < n1; i++) {
-        L[i] = arr[left + i];
-        L_order[i] = order[left + i];
-    }
-    for (int i = 0; i < n2; i++) {
-        R[i] = arr[mid + 1 + i];
-        R_order[i] = order[mid + 1 + i];
-    }
+// // 최소힙
+// class MinHeap {
+//     int heap[MAXN];
+//     int sz;
+// public:
+//     MinHeap() : sz(0) {}
+//     void push(int val) {
+//         heap[sz] = val;
+//         int idx = sz++;
+//         while (idx > 0 && heap[(idx - 1) / 2] > heap[idx]) {
+//             swap(heap[(idx - 1) / 2], heap[idx]);
+//             idx = (idx - 1) / 2;
+//         }
+//     }
+//     void pop() {
+//         heap[0] = heap[--sz];
+//         int idx = 0;
+//         while (true) {
+//             int left = idx * 2 + 1, right = idx * 2 + 2, smallest = idx;
+//             if (left < sz && heap[left] < heap[smallest]) smallest = left;
+//             if (right < sz && heap[right] < heap[smallest]) smallest = right;
+//             if (smallest == idx) break;
+//             swap(heap[idx], heap[smallest]);
+//             idx = smallest;
+//         }
+//     }
+//     int top() const { return heap[0]; }
+//     int size() const { return sz; }
+//     bool empty() const { return sz == 0; }
+// };
 
-    int i = 0, j = 0, k = left;
-    while (i < n1 && j < n2) {
-        if (L[i] <= R[j]) {
-            arr[k] = L[i];
-            order[k] = L_order[i];
-            i++;
-        } else {
-            arr[k] = R[j];
-            order[k] = R_order[j];
-            j++;
-        }
-        k++;
-    }
-    while (i < n1) {
-        arr[k] = L[i];
-        order[k] = L_order[i];
-        i++;
-        k++;
-    }
-    while (j < n2) {
-        arr[k] = R[j];
-        order[k] = R_order[j];
-        j++;
-        k++;
-    }
+#include <queue>
+using namespace std;
 
-    delete[] L;
-    delete[] R;
-    delete[] L_order;
-    delete[] R_order;
-}
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
 
-void mergeSort(int* arr, int* order, int left, int right) {
-    if (left < right) {
-        int mid = left + (right - left) / 2;
-        mergeSort(arr, order, left, mid);
-        mergeSort(arr, order, mid + 1, right);
-        merge(arr, order, left, mid, right);
-    }
-}
-
-int main(){
-    int n; // n: 수의 개수
-
+    int n;
     cin >> n;
-    int* arr = new int[n]; // 수를 저장할 배열
-    int* order = new int[n]; // 정렬된 수의 원래 순서
 
-    // 입력 받기
-    for(int i=0; i<n; ++i){
-        cin >> arr[i];
-        order[i] = i;
+    priority_queue<int> maxHeap; // 중앙값 이하
+    priority_queue<int, vector<int>, greater<int>> minHeap; // 중앙값 이상
+
+    for (int i = 0; i < n; ++i) {
+        int num;
+        cin >> num;
+
+        // maxHeap이 비었거나 num이 중앙값 이하이면 maxHeap에 삽입
+        if (maxHeap.empty() || num <= maxHeap.top()) {
+            maxHeap.push(num);
+        } else {
+            minHeap.push(num);
+        }
+
+        // 힙 크기 조절
+        if (maxHeap.size() > minHeap.size() + 1) {
+            minHeap.push(maxHeap.top());
+            maxHeap.pop();
+        } else if (minHeap.size() > maxHeap.size()) {
+            maxHeap.push(minHeap.top());
+            minHeap.pop();
+        }
+
+        // 중앙값 출력 (maxHeap.top())
+        cout << maxHeap.top() << '\n';
     }
-    
-    // 합병정렬로 arr와 order를 함께 정렬
-    mergeSort(arr, order, 0, n - 1);
 
-    // 결과 출력
-    for (int i = 0; i < n; i++) {
-        if (i != 0) cout << " ";
-        cout << arr[order[i]];
-    }
-    cout << endl;
-
-    delete[] arr;
-    delete[] order;
     return 0;
 }
