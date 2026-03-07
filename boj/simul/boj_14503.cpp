@@ -62,7 +62,7 @@ int main(){
             }
         }
         else{
-            int tmp = (d+2) %2;
+            int tmp = (d+2) %4;
             int nx = r + dx[tmp];
             int ny = c + dy[tmp];
             if (nx >= 0 && nx < n && ny >= 0 && ny < m) {
