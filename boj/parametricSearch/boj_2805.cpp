@@ -14,7 +14,7 @@ using namespace std;
 
 int tree[1000000];
 
-int cal(int n,int target){
+long long cal(int n,int target){
     long long sum =0;
     for(int i=0; i<n; i++){
         if(tree[i] > target)
@@ -27,18 +27,21 @@ int binarySearch(int n, int max,int x){
     int l = 0;
     int r = max;
     int ans = 0;
-    int mid;
 
     while(l <= r){
-        mid = (l + r) / 2;
-        int len = cal(n,mid);
+        int mid = (l + r) / 2;
+        long long len = cal(n,mid);
 
-        if(len == x) return mid;
-        else if(len < x) l = mid + 1;
-        else r = mid - 1;
+        if(len >= x){
+            ans = mid;
+            l = mid + 1;
+        }
+        else{
+            r = mid - 1;
+        }
     }
 
-    return mid;
+    return ans;
 }
 
 
