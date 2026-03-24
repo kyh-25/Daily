@@ -15,7 +15,7 @@ int main() {
     ios::sync_with_stdio(false);
     cin.tie(NULL);
 
-        int n;
+    int n;
     cin >> n;
 
     vector<int> arr = vector<int>(n+1);
